@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="nh_background">#08090D</color>
+    <color name="nh_surface">#151820</color>
+    <color name="nh_red">#E50914</color>
+    <color name="nh_white">#FFFFFF</color>
+</resources>

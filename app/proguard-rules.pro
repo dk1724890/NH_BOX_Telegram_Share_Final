@@ -1,0 +1,7 @@
+-keepattributes Signature
+-keepattributes *Annotation*
+-keep class com.nhbox.app.data.model.** { *; }
+-keep class com.nhbox.app.data.remote.** { *; }
+-keepclassmembers class com.nhbox.app.data.model.** { *; }
+-dontwarn okhttp3.**
+-dontwarn okio.**

@@ -1,0 +1,131 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "users": {
+      ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'admin')",
+        ".write": "auth != null && ((auth.uid === $uid && (!newData.exists() ? false : (!data.exists() ? (newData.child('role').val() === 'user' && newData.child('accountStatus').val() === 'active') : (newData.child('role').val() === data.child('role').val() && newData.child('accountStatus').val() === data.child('accountStatus').val())))) || root.child('users').child(auth.uid).child('role').val() === 'admin')",
+        ".validate": "newData.hasChildren(['uid', 'email', 'role', 'accountStatus']) && newData.child('uid').val() === $uid && (newData.child('role').val() === 'user' || newData.child('role').val() === 'admin') && (newData.child('accountStatus').val() === 'active' || newData.child('accountStatus').val() === 'suspended' || newData.child('accountStatus').val() === 'banned')"
+      }
+    },
+    "movies": {
+      ".indexOn": ["published", "featured", "releaseYear", "rating", "createdAt"],
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      "$movieId": {
+        ".validate": "newData.hasChildren(['id', 'title', 'releaseYear'])"
+      }
+    },
+    "tvSeries": {
+      ".indexOn": ["published", "releaseYear", "rating", "createdAt"],
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      "$seriesId": {
+        ".validate": "newData.hasChildren(['id', 'title', 'releaseYear'])"
+      }
+    },
+    "seasons": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      "$seriesId": {
+        ".indexOn": ["seasonNumber"]
+      }
+    },
+    "episodes": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      "$seriesId": {
+        "$seasonId": {
+          ".indexOn": ["episodeNumber"]
+        }
+      }
+    },
+    "videoLinks": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'"
+    },
+    "categories": {
+      ".indexOn": ["order", "enabled"],
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      "$categoryId": {
+        ".validate": "newData.hasChildren(['id', 'name', 'order'])"
+      }
+    },
+    "genres": {
+      ".indexOn": ["name"],
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'"
+    },
+    "banners": {
+      ".indexOn": ["order", "enabled"],
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      "$bannerId": {
+        ".validate": "newData.hasChildren(['id', 'title', 'order'])"
+      }
+    },
+    "watchHistory": {
+      "$uid": {
+        ".indexOn": ["updatedAt"],
+        ".read": "auth != null && (auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'admin')",
+        ".write": "auth != null && auth.uid === $uid",
+        "$contentId": {
+          ".validate": "newData.hasChildren(['contentId', 'positionMs', 'durationMs', 'updatedAt'])"
+        }
+      }
+    },
+    "watchlist": {
+      "$uid": {
+        ".indexOn": ["addedAt"],
+        ".read": "auth != null && (auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'admin')",
+        ".write": "auth != null && auth.uid === $uid",
+        "$contentId": {
+          ".validate": "newData.hasChildren(['contentId', 'contentType', 'addedAt'])"
+        }
+      }
+    },
+    "downloads": {
+      "$uid": {
+        ".indexOn": ["createdAt"],
+        ".read": "auth != null && (auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'admin')",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+    "notifications": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || $uid === 'broadcast' || root.child('users').child(auth.uid).child('role').val() === 'admin')",
+        ".write": "auth != null && (auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'admin')"
+      }
+    },
+    "analytics": {
+      ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      "contentViews": {
+        "$contentId": {
+          ".write": "auth != null"
+        }
+      }
+    },
+    "appSettings": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'"
+    },
+    "adminSettings": {
+      ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'"
+    },
+    "images": {
+      ".indexOn": ["sha256Hash", "ownerId"],
+      ".read": "auth != null",
+      ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() === 'admin' || (newData.exists() && newData.child('category').val() === 'PROFILE' && newData.child('ownerId').val() === auth.uid))",
+      "$imageId": {
+        ".validate": "newData.hasChildren(['id', 'base64Data', 'mimeType', 'sizeBytes']) && newData.child('sizeBytes').isNumber() && newData.child('sizeBytes').val() <= 350000"
+      }
+    }
+  }
+}
